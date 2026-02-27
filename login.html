@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AgroSentinel — Acesso ao Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   TOKENS — idênticos ao dashboard
+════════════════════════════════════════ */
+:root {
+  --bg:         #0a0f0a;
+  --surface:    #111a11;
+  --surface2:   #162016;
+  --border:     #1e2e1e;
+  --green:      #4ade80;
+  --green-dim:  #1a4025;
+  --green-glow: rgba(74,222,128,0.15);
+  --amber:      #f59e0b;
+  --red:        #f87171;
+  --red-dim:    #3a1010;
+  --blue:       #60a5fa;
+  --text:       #e2eed4;
+  --text-muted: #6b7e5a;
+  --text-dim:   #3d4f32;
+  --font-mono:  'Space Mono', monospace;
+  --font-ui:    'Syne', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { height:100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100dvh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── GRID TEXTURE ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(74,222,128,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74,222,128,.025) 1px, transparent 1px);
+  background-size:32px 32px;
+}
+
+/* ════════════════════════════════════════
+   PAINEL ESQUERDO — BRANDING
+════════════════════════════════════════ */
+.left-panel {
+  position: relative;
+  width: 52%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 52px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Borda direita separadora */
+.left-panel::after {
+  content:'';
+  position:absolute; top:0; right:0;
+  width:1px; height:100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--border) 15%,
+    rgba(74,222,128,.3) 50%,
+    var(--border) 85%,
+    transparent 100%
+  );
+}
+
+/* Efeito de radial glow de fundo */
+.left-bg-glow {
+  position:absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74,222,128,.06) 0%, transparent 70%);
+  top: 50%; left: 40%;
+  transform: translate(-50%, -50%);
+  pointer-events:none;
+}
+
+/* Scan line animada */
+.left-scan {
+  position:absolute; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(74,222,128,.2), transparent);
+  animation: scanV 8s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes scanV {
+  0%   { top:-1px; opacity:0; }
+  5%   { opacity:1; }
+  95%  { opacity:1; }
+  100% { top:100%; opacity:0; }
+}
+
+/* ── LOGO ── */
+.brand-logo {
+  position:relative; z-index:1;
+  display:flex; align-items:center; gap:14px;
+  animation: fadeUp .5s ease both;
+}
+
+.brand-icon {
+  width:44px; height:44px;
+  background:var(--green-dim); border:1px solid rgba(74,222,128,.5);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+}
+
+.brand-name { font-size:22px; font-weight:800; letter-spacing:-.5px; }
+.brand-name span { color:var(--green); }
+.brand-tagline {
+  font-family:var(--font-mono); font-size:9px;
+  color:var(--text-muted); letter-spacing:2px; text-transform:uppercase;
+  margin-top:2px;
+}
+
+/* ── HERO TEXT ── */
+.brand-hero {
+  position:relative; z-index:1;
+  animation: fadeUp .5s ease .12s both;
+}
+
+.brand-eyebrow {
+  font-family:var(--font-mono); font-size:10px;
+  letter-spacing:3px; text-transform:uppercase;
+  color:var(--green); margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+}
+.brand-eyebrow::before {
+  content:'';
+  display:block; width:32px; height:1px; background:var(--green);
+}
+
+.brand-title {
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.brand-title em {
+  font-style: italic;
+  color: var(--green);
+  font-size: 92%;
+}
+
+.brand-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 380px;
+}
+
+/* ── STATS ROW ── */
+.brand-stats {
+  display: flex; gap:0;
+  margin-top: 40px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  animation: fadeUp .5s ease .22s both;
+}
+
+.bstat {
+  flex:1; padding:14px 16px;
+  border-right:1px solid var(--border);
+  position:relative; overflow:hidden;
+}
+.bstat:last-child { border-right:none; }
+.bstat::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+}
+.bstat:nth-child(1)::after { background:var(--green); }
+.bstat:nth-child(2)::after { background:var(--amber); }
+.bstat:nth-child(3)::after { background:var(--blue); }
+
+.bstat-val {
+  font-size:24px; font-weight:800; line-height:1;
+  font-family:var(--font-mono);
+}
+.bstat:nth-child(1) .bstat-val { color:var(--green); }
+.bstat:nth-child(2) .bstat-val { color:var(--amber); }
+.bstat:nth-child(3) .bstat-val { color:var(--blue); }
+.bstat-lbl {
+  font-family:var(--font-mono); font-size:8px;
+  letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--text-muted); margin-top:5px;
+}
+
+/* ── FEATURE LIST ── */
+.feature-list {
+  display:flex; flex-direction:column; gap:10px;
+  margin-top:32px;
+  animation: fadeUp .5s ease .3s both;
+}
+
+.feature-item {
+  display:flex; align-items:center; gap:12px;
+  font-size:13px; color:var(--text-muted);
+}
+.feature-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green); flex-shrink:0;
+  box-shadow: 0 0 6px var(--green);
+}
+
+/* ── FOOTER INFO ── */
+.brand-footer {
+  position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:space-between;
+  animation: fadeUp .5s ease .38s both;
+}
+
+.brand-footer-left {
+  font-family:var(--font-mono); font-size:9px;
+  color:var(--text-dim); letter-spacing:1px;
+}
+
+.live-indicator {
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--font-mono); font-size:9px;
+  color:var(--green); background:var(--green-dim);
+  border:1px solid rgba(74,222,128,.3);
+  padding:4px 10px; border-radius:20px;
+}
+.live-dot-sm {
+  width:5px; height:5px; border-radius:50%;
+  background:var(--green); animation:pulse 2s infinite;
+}
+
+/* ════════════════════════════════════════
+   PAINEL DIREITO — FORMULÁRIO
+════════════════════════════════════════ */
+.right-panel {
+  flex:1;
+  display:flex; align-items:center; justify-content:center;
+  padding:40px 24px;
+  position:relative; z-index:1;
+}
+
+.form-card {
+  width:100%; max-width:400px;
+  animation: fadeUp .5s ease .1s both;
+}
+
+/* ── HEADER DO FORM ── */
+.form-header {
+  margin-bottom:32px;
+}
+
+.form-section-label {
+  font-family:var(--font-mono); font-size:9px;
+  letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.form-section-label::before {
+  content:'//'; color:var(--green);
+}
+
+.form-title {
+  font-size:28px; font-weight:800; letter-spacing:-.5px;
+  line-height:1.1; margin-bottom:8px;
+}
+
+.form-subtitle {
+  font-size:13px; color:var(--text-muted); line-height:1.6;
+}
+
+/* ── FIELDS ── */
+.field-group {
+  display:flex; flex-direction:column; gap:16px;
+  margin-bottom:24px;
+}
+
+.field {
+  display:flex; flex-direction:column; gap:7px;
+}
+
+.field-label {
+  font-family:var(--font-mono); font-size:9px;
+  letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--text-muted);
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+.field-wrap {
+  position:relative;
+}
+
+.field-icon {
+  position:absolute; left:14px; top:50%;
+  transform:translateY(-50%);
+  font-size:15px; pointer-events:none;
+  opacity:.5;
+}
+
+.field-input {
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:13px 14px 13px 44px;
+  font-family:var(--font-mono); font-size:13px;
+  color:var(--text);
+  outline:none;
+  transition:all .2s;
+  color-scheme:dark;
+}
+
+.field-input::placeholder { color:var(--text-dim); }
+
+.field-input:focus {
+  border-color:var(--green);
+  background:rgba(74,222,128,.03);
+  box-shadow: 0 0 0 3px rgba(74,222,128,.08);
+}
+
+.field-input.error {
+  border-color:var(--red);
+  background:rgba(248,113,113,.03);
+  box-shadow:0 0 0 3px rgba(248,113,113,.08);
+}
+
+.field-error {
+  font-family:var(--font-mono); font-size:10px;
+  color:var(--red); display:none;
+  padding:6px 10px;
+  background:var(--red-dim); border-radius:4px;
+  border-left:2px solid var(--red);
+}
+.field-error.show { display:block; }
+
+/* Toggle senha */
+.toggle-pass {
+  position:absolute; right:14px; top:50%;
+  transform:translateY(-50%);
+  background:none; border:none;
+  color:var(--text-muted); cursor:pointer;
+  font-size:15px; padding:2px;
+  transition:color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.toggle-pass:hover { color:var(--text); }
+
+/* ── OPTIONS ROW ── */
+.options-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:28px;
+}
+
+.checkbox-label {
+  display:flex; align-items:center; gap:8px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.checkbox-input { display:none; }
+
+.checkbox-custom {
+  width:18px; height:18px; flex-shrink:0;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:4px; display:flex; align-items:center; justify-content:center;
+  transition:all .15s;
+}
+.checkbox-input:checked + .checkbox-custom {
+  background:var(--green-dim); border-color:rgba(74,222,128,.5);
+}
+.checkbox-input:checked + .checkbox-custom::after {
+  content:'✓'; font-size:11px; color:var(--green);
+}
+
+.checkbox-text {
+  font-family:var(--font-mono); font-size:10px; color:var(--text-muted);
+}
+
+.forgot-link {
+  font-family:var(--font-mono); font-size:10px;
+  color:var(--text-muted); text-decoration:none;
+  transition:color .15s;
+  cursor:pointer; background:none; border:none; padding:0;
+}
+.forgot-link:hover { color:var(--green); }
+
+/* ── BOTÃO PRINCIPAL ── */
+.btn-login {
+  width:100%; padding:15px;
+  background:var(--green-dim);
+  border:1px solid rgba(74,222,128,.45);
+  border-radius:9px;
+  color:var(--green);
+  font-family:var(--font-mono); font-size:13px;
+  letter-spacing:2px; font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+
+.btn-login::before {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, rgba(74,222,128,.08), transparent);
+  transform:translateX(-100%);
+  transition:transform .5s;
+}
+
+.btn-login:hover:not(:disabled)::before { transform:translateX(100%); }
+.btn-login:hover:not(:disabled) {
+  background:rgba(74,222,128,.18);
+  border-color:rgba(74,222,128,.7);
+  box-shadow:0 0 20px rgba(74,222,128,.12);
+}
+.btn-login:active:not(:disabled) { transform:scale(.99); }
+.btn-login:disabled { opacity:.5; cursor:not-allowed; }
+
+.btn-login-icon { font-size:16px; }
+
+/* Spinner dentro do botão */
+.btn-spinner {
+  width:15px; height:15px; border-radius:50%;
+  border:2px solid rgba(74,222,128,.3); border-top-color:var(--green);
+  animation:spin .7s linear infinite; display:none;
+}
+.btn-login.loading .btn-spinner { display:block; }
+.btn-login.loading .btn-login-text { display:none; }
+.btn-login.loading .btn-login-icon { display:none; }
+
+/* ── DIVIDER ── */
+.form-divider {
+  display:flex; align-items:center; gap:12px;
+  margin:22px 0;
+}
+.form-divider::before, .form-divider::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+.form-divider-text {
+  font-family:var(--font-mono); font-size:9px;
+  color:var(--text-dim); letter-spacing:1px; white-space:nowrap;
+}
+
+/* ── ALERTA DE ERRO GLOBAL ── */
+.alert-error {
+  display:none;
+  background:var(--red-dim); border:1px solid rgba(248,113,113,.35);
+  border-radius:8px; padding:12px 14px;
+  margin-bottom:20px;
+  font-family:var(--font-mono); font-size:11px; color:var(--red);
+  animation:slideIn .25s ease;
+  align-items:center; gap:10px;
+}
+.alert-error.show { display:flex; }
+
+/* ── FOOTER DO FORM ── */
+.form-footer {
+  margin-top:28px; text-align:center;
+  font-family:var(--font-mono); font-size:9px;
+  color:var(--text-dim); line-height:1.8;
+}
+
+/* ════════════════════════════════════════
+   MODAL — "Esqueci a senha"
+════════════════════════════════════════ */
+.modal-overlay {
+  display:none; position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(8px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.open { display:flex; }
+
+.modal-box {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:28px;
+  max-width:360px; width:100%;
+  animation:fadeUp .25s ease;
+}
+
+.modal-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px;
+}
+.modal-title { font-size:15px; font-weight:700; }
+.modal-close {
+  background:none; border:none; color:var(--text-muted);
+  font-size:20px; cursor:pointer; line-height:1; padding:4px;
+  transition:color .15s;
+}
+.modal-close:hover { color:var(--text); }
+
+.modal-desc {
+  font-size:12px; color:var(--text-muted);
+  line-height:1.7; margin-bottom:20px;
+}
+
+.modal-field {
+  display:flex; flex-direction:column; gap:7px; margin-bottom:16px;
+}
+.modal-label {
+  font-family:var(--font-mono); font-size:9px;
+  letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted);
+}
+.modal-input {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:7px; padding:11px 13px;
+  font-family:var(--font-mono); font-size:12px; color:var(--text);
+  outline:none; transition:border-color .15s; color-scheme:dark;
+}
+.modal-input:focus { border-color:var(--green); }
+
+.modal-btn {
+  width:100%; padding:11px;
+  background:var(--green-dim); border:1px solid rgba(74,222,128,.4);
+  border-radius:7px; color:var(--green);
+  font-family:var(--font-mono); font-size:11px; letter-spacing:1.5px;
+  cursor:pointer; transition:all .2s;
+}
+.modal-btn:hover { background:rgba(74,222,128,.15); }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:11px 20px;
+  font-family:var(--font-mono); font-size:11px;
+  z-index:200; white-space:nowrap; pointer-events:none;
+  animation:toastIn .3s ease;
+}
+.toast.success { border-color:rgba(74,222,128,.4); color:var(--green); }
+.toast.info    { border-color:rgba(96,165,250,.3);  color:var(--blue); }
+
+/* ════════════════════════════════════════
+   ANIMAÇÕES
+════════════════════════════════════════ */
+@keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:translateX(0)} }
+@keyframes spin    { to{transform:rotate(360deg)} }
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+/* ════════════════════════════════════════
+   RESPONSIVO — TABLET
+════════════════════════════════════════ */
+@media(max-width:900px) {
+  body { flex-direction:column; overflow:auto; }
+
+  .left-panel {
+    width:100%; min-height:auto;
+    padding:32px 28px;
+    border-right:none;
+  }
+  .left-panel::after { display:none; }
+
+  /* Simplifica o painel esquerdo em tablet */
+  .brand-hero { margin:20px 0; }
+  .brand-title { font-size:28px; }
+  .feature-list { display:none; }
+  .brand-stats { margin-top:20px; }
+
+  /* Adiciona separador inferior */
+  .left-panel::before {
+    content:'';
+    position:absolute; bottom:0; left:0; right:0;
+    height:1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--border) 15%,
+      rgba(74,222,128,.3) 50%,
+      var(--border) 85%,
+      transparent 100%
+    );
+  }
+
+  .right-panel { padding:32px 28px 48px; }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVO — MOBILE
+════════════════════════════════════════ */
+@media(max-width:540px) {
+  .left-panel {
+    padding:24px 20px 28px;
+  }
+
+  /* No mobile: painel esquerdo vira header compacto */
+  .brand-hero { display:none; }
+  .brand-stats { display:none; }
+  .brand-footer { display:none; }
+
+  .brand-logo { margin-bottom:0; }
+
+  .right-panel { padding:24px 20px 40px; }
+  .form-title  { font-size:24px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     PAINEL ESQUERDO — BRANDING
+══════════════════════════════════════ -->
+<div class="left-panel">
+  <div class="left-bg-glow"></div>
+  <div class="left-scan"></div>
+
+  <!-- Logo -->
+  <div class="brand-logo">
+    <div class="brand-icon">🌽</div>
+    <div>
+      <div class="brand-name">Agro<span>Sentinel</span></div>
+      <div class="brand-tagline">Sistema de monitoramento de pragas</div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="brand-hero">
+    <div class="brand-eyebrow">Monitoramento Inteligente</div>
+    <h1 class="brand-title">
+      Detecção em tempo<br>real de <em>Spodoptera<br>frugiperda</em>
+    </h1>
+    <p class="brand-desc">
+      Armadilhas IoT combinadas com visão computacional para identificar e quantificar infestações de lagarta-do-cartucho antes que causem danos significativos à lavoura.
+    </p>
+
+    <!-- Stats -->
+    <div class="brand-stats">
+      <div class="bstat">
+        <div class="bstat-val">98%</div>
+        <div class="bstat-lbl">Precisão IA</div>
+      </div>
+      <div class="bstat">
+        <div class="bstat-val">3–5</div>
+        <div class="bstat-lbl">Capturas/dia</div>
+      </div>
+      <div class="bstat">
+        <div class="bstat-val">24h</div>
+        <div class="bstat-lbl">Histórico</div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        Identificação automática por modelo de visão computacional
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        Alertas por nível de infestação (baixa, média, alta)
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        Histórico de imagens com navegação por data e período
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        Localização GPS da armadilha em campo
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="brand-footer">
+    <div class="brand-footer-left">
+      © 2025 AgroSentinel · Projeto Universitário
+    </div>
+    <div class="live-indicator">
+      <div class="live-dot-sm"></div>
+      SISTEMA ATIVO
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAINEL DIREITO — FORMULÁRIO
+══════════════════════════════════════ -->
+<div class="right-panel">
+  <div class="form-card">
+
+    <div class="form-header">
+      <div class="form-section-label">acesso ao sistema</div>
+      <h2 class="form-title">Entrar</h2>
+      <p class="form-subtitle">Insira suas credenciais para acessar o painel de monitoramento.</p>
+    </div>
+
+    <!-- Alerta de erro global -->
+    <div class="alert-error" id="alertError">
+      <span>⚠</span>
+      <span id="alertErrorMsg">Usuário ou senha incorretos.</span>
+    </div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+      <div class="field-group">
+
+        <!-- Email/Usuário -->
+        <div class="field">
+          <div class="field-label">
+            <span>Usuário</span>
+          </div>
+          <div class="field-wrap">
+            <span class="field-icon">👤</span>
+            <input
+              type="text"
+              id="fieldUser"
+              class="field-input"
+              placeholder="seu.usuario@email.com"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+            >
+          </div>
+          <div class="field-error" id="errUser">Informe seu usuário ou e-mail.</div>
+        </div>
+
+        <!-- Senha -->
+        <div class="field">
+          <div class="field-label">
+            <span>Senha</span>
+          </div>
+          <div class="field-wrap">
+            <span class="field-icon">🔒</span>
+            <input
+              type="password"
+              id="fieldPass"
+              class="field-input"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            >
+            <button type="button" class="toggle-pass" id="togglePass" onclick="togglePassword()" aria-label="Mostrar senha">
+              👁
+            </button>
+          </div>
+          <div class="field-error" id="errPass">Informe sua senha.</div>
+        </div>
+
+      </div>
+
+      <!-- Opções -->
+      <div class="options-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="checkbox-input" id="rememberMe">
+          <div class="checkbox-custom"></div>
+          <span class="checkbox-text">Manter conectado</span>
+        </label>
+        <button type="button" class="forgot-link" onclick="openForgotModal()">
+          Esqueci a senha
+        </button>
+      </div>
+
+      <!-- Botão -->
+      <button type="submit" class="btn-login" id="btnLogin">
+        <span class="btn-login-icon">⎆</span>
+        <span class="btn-login-text">ACESSAR O SISTEMA</span>
+        <div class="btn-spinner"></div>
+      </button>
+
+    </form>
+
+    <div class="form-divider">
+      <span class="form-divider-text">// informações</span>
+    </div>
+
+    <div class="form-footer">
+      Acesso restrito a membros autorizados da equipe.<br>
+      Em caso de problemas, contate o administrador do projeto.
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL — ESQUECI A SENHA
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="forgotModal" onclick="handleModalBg(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">Recuperar acesso</div>
+      <button class="modal-close" onclick="closeForgotModal()">✕</button>
+    </div>
+    <p class="modal-desc">
+      Informe seu e-mail cadastrado. Enviaremos as instruções para redefinição de senha.
+    </p>
+    <div class="modal-field">
+      <div class="modal-label">E-mail</div>
+      <input type="email" class="modal-input" id="forgotEmail" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <button class="modal-btn" onclick="handleForgotPassword()">ENVIAR INSTRUÇÕES</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   API HOOK — Integração de autenticação
+   Substitua as funções abaixo para conectar ao backend real.
+═══════════════════════════════════════════════════════════════ */
+const AUTH = {
+
+  // API HOOK: POST /auth/login
+  // Body: { username, password, remember }
+  // Retorno esperado: { token: "jwt_token", user: { name, role } }
+  async login(username, password, remember) {
+    // ── MOCK ── remova este bloco e descomente o fetch abaixo
+    await delay(1400); // simula latência de rede
+    if (username === 'admin' && password === '1234') {
+      return { token: 'mock-jwt-token-xyz', user: { name: 'Administrador', role: 'admin' } };
+    }
+    throw new Error('Credenciais inválidas');
+    // ── REAL ──
+    // const res = await fetch('/api/v1/auth/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ username, password, remember })
+    // });
+    // if (!res.ok) {
+    //   const err = await res.json();
+    //   throw new Error(err.message || 'Erro ao fazer login');
+    // }
+    // return res.json(); // { token, user }
+  },
+
+  // API HOOK: POST /auth/forgot-password
+  // Body: { email }
+  async forgotPassword(email) {
+    // ── MOCK ──
+    await delay(1000);
+    return { success: true };
+    // ── REAL ──
+    // const res = await fetch('/api/v1/auth/forgot-password', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email })
+    // });
+    // if (!res.ok) throw new Error('Erro ao enviar e-mail');
+    // return res.json();
+  },
+
+  // Após login bem-sucedido — salvar token e redirecionar
+  saveSession(token, remember) {
+    // API HOOK: ajuste storage e rota conforme necessário
+    if (remember) {
+      localStorage.setItem('agrosentinel_token', token);
+    } else {
+      sessionStorage.setItem('agrosentinel_token', token);
+    }
+  },
+
+  redirect() {
+    // API HOOK: altere para a rota real do dashboard
+    window.location.href = 'dashboard-spodoptera-v4.html';
+    // Em produção: window.location.href = '/dashboard';
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   LÓGICA DO FORMULÁRIO
+═══════════════════════════════════════════════════════════════ */
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function showToast(msg, type = 'info', duration = 3000) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), duration);
+}
+
+// ── TOGGLE SENHA ──
+let passVisible = false;
+function togglePassword() {
+  passVisible = !passVisible;
+  const input = document.getElementById('fieldPass');
+  const btn   = document.getElementById('togglePass');
+  input.type  = passVisible ? 'text' : 'password';
+  btn.textContent = passVisible ? '🙈' : '👁';
+}
+
+// ── VALIDAÇÃO ──
+function clearErrors() {
+  ['fieldUser','fieldPass'].forEach(id => {
+    document.getElementById(id).classList.remove('error');
+  });
+  ['errUser','errPass'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  document.getElementById('alertError').classList.remove('show');
+}
+
+function validate() {
+  let ok = true;
+  const user = document.getElementById('fieldUser').value.trim();
+  const pass = document.getElementById('fieldPass').value;
+
+  if (!user) {
+    document.getElementById('fieldUser').classList.add('error');
+    document.getElementById('errUser').classList.add('show');
+    ok = false;
+  }
+  if (!pass) {
+    document.getElementById('fieldPass').classList.add('error');
+    document.getElementById('errPass').classList.add('show');
+    ok = false;
+  }
+  return ok;
+}
+
+// ── SUBMIT ──
+async function handleLogin(e) {
+  e.preventDefault();
+  clearErrors();
+
+  if (!validate()) return;
+
+  const user     = document.getElementById('fieldUser').value.trim();
+  const pass     = document.getElementById('fieldPass').value;
+  const remember = document.getElementById('rememberMe').checked;
+  const btn      = document.getElementById('btnLogin');
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const { token } = await AUTH.login(user, pass, remember);
+    AUTH.saveSession(token, remember);
+    showToast('✓ Acesso autorizado — redirecionando...', 'success', 2000);
+    await delay(900);
+    AUTH.redirect();
+  } catch (err) {
+    document.getElementById('alertError').classList.add('show');
+    document.getElementById('alertErrorMsg').textContent =
+      err.message === 'Credenciais inválidas'
+        ? 'Usuário ou senha incorretos. Tente novamente.'
+        : err.message || 'Erro inesperado. Tente novamente.';
+    // Shake nos campos
+    ['fieldUser','fieldPass'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.add('error');
+      el.style.animation = 'shake .4s ease';
+      setTimeout(() => el.style.animation = '', 400);
+    });
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// ── MODAL ESQUECI A SENHA ──
+function openForgotModal() {
+  document.getElementById('forgotModal').classList.add('open');
+  setTimeout(() => document.getElementById('forgotEmail').focus(), 150);
+}
+function closeForgotModal() {
+  document.getElementById('forgotModal').classList.remove('open');
+}
+function handleModalBg(e) {
+  if (e.target === document.getElementById('forgotModal')) closeForgotModal();
+}
+
+async function handleForgotPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('forgotEmail').focus();
+    return;
+  }
+
+  const btn = document.querySelector('.modal-btn');
+  const original = btn.textContent;
+  btn.textContent = 'ENVIANDO...';
+  btn.disabled = true;
+
+  try {
+    await AUTH.forgotPassword(email);
+    closeForgotModal();
+    showToast('✓ Instruções enviadas para ' + email, 'success', 4000);
+    document.getElementById('forgotEmail').value = '';
+  } catch {
+    showToast('Erro ao enviar. Verifique o e-mail.', 'info');
+  } finally {
+    btn.textContent = original;
+    btn.disabled = false;
+  }
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeForgotModal();
+});
+
+// Limpar erro ao digitar
+['fieldUser','fieldPass'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    document.getElementById(id).classList.remove('error');
+    document.getElementById('alertError').classList.remove('show');
+  });
+});
+
+// CSS de shake (injeta dinamicamente)
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    20%      { transform:translateX(-6px); }
+    40%      { transform:translateX(6px); }
+    60%      { transform:translateX(-4px); }
+    80%      { transform:translateX(4px); }
+  }
+`;
+document.head.appendChild(shakeStyle);
+</script>
+</body>
+</html>
