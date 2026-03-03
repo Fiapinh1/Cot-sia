@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -617,7 +617,7 @@ body::before {
   <div class="theme-toggle-track">
     <div class="theme-toggle-thumb" id="themeThumb"></div>
   </div>
-  <span class="theme-toggle-label" id="themeLabel">ESCURO</span>
+  <span class="theme-toggle-label" id="themeLabel">CLARO</span>
 </button>
 
 <!-- ══════════════════════════════════════
@@ -781,7 +781,7 @@ function toggleTheme() {
 
 // Restaura tema salvo
 (function() {
-  const saved = localStorage.getItem(THEME_KEY) || 'dark';
+  const saved = localStorage.getItem(THEME_KEY) || 'light';
   applyTheme(saved);
 })();
 
